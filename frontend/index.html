@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InstallatieApp - CV Ketel Assistent</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 900px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .brand-selector {
+            margin-bottom: 40px;
+        }
+
+        .brand-selector h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.4em;
+        }
+
+        .brand-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .brand-card {
+            padding: 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            background: white;
+        }
+
+        .brand-card:hover {
+            border-color: #4a5568;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(74, 85, 104, 0.2);
+        }
+
+        .brand-card.active {
+            background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
+            color: white;
+            border-color: transparent;
+        }
+
+        .brand-card .brand-icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .quick-questions {
+            margin-bottom: 40px;
+            padding: 25px;
+            background: #f8f9fa;
+            border-radius: 12px;
+        }
+
+        .quick-questions h3 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.2em;
+        }
+
+        .question-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .question-pill {
+            padding: 10px 20px;
+            background: white;
+            border: 1px solid #4a5568;
+            color: #4a5568;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.95em;
+        }
+
+        .question-pill:hover {
+            background: #4a5568;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .chat-section {
+            border-top: 2px solid #f0f0f0;
+            padding-top: 30px;
+        }
+
+        .chat-section h3 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.2em;
+        }
+
+        .chat-messages {
+            max-height: 400px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+        }
+
+        .message {
+            margin-bottom: 20px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message.user {
+            text-align: right;
+        }
+
+        .message.assistant {
+            text-align: left;
+        }
+
+        .message-bubble {
+            display: inline-block;
+            padding: 15px 20px;
+            border-radius: 18px;
+            max-width: 70%;
+            word-wrap: break-word;
+        }
+
+        .message.user .message-bubble {
+            background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
+            color: white;
+        }
+
+        .message.assistant .message-bubble {
+            background: #f7fafc;
+            color: #2d3748;
+            border: 1px solid #e2e8f0;
+        }
+
+        .message-label {
+            font-size: 0.85em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .input-section {
+            display: flex;
+            gap: 10px;
+        }
+
+        .input-section input {
+            flex: 1;
+            padding: 15px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: border-color 0.3s ease;
+        }
+
+        .input-section input:focus {
+            outline: none;
+            border-color: #4a5568;
+        }
+
+        .input-section button {
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: transform 0.3s ease;
+        }
+
+        .input-section button:hover {
+            transform: translateY(-2px);
+        }
+
+        .input-section button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .source-tag {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 5px 10px;
+            background: #edf2f7;
+            border-radius: 5px;
+            font-size: 0.85em;
+            color: #4a5568;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .brand-cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .message-bubble {
+                max-width: 85%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔧 InstallatieApp</h1>
+            <p>AI-assistent voor Intergas CV-ketel monteurs</p>
+        </div>
+        
+        <div class="content">
+            <div class="brand-selector">
+                <h2>Selecteer het model van de Intergas CV-ketel:</h2>
+                <div class="brand-cards">
+                    <div class="brand-card" onclick="selectModel('HRE 24/18 A')">
+                        <div class="brand-icon">🔥</div>
+                        <div>HRE 24/18 A</div>
+                    </div>
+                    <div class="brand-card" onclick="selectModel('HRE 28/24 A')">
+                        <div class="brand-icon">💧</div>
+                        <div>HRE 28/24 A</div>
+                    </div>
+                    <div class="brand-card" onclick="selectModel('HRE 36/30 A')">
+                        <div class="brand-icon">⚡</div>
+                        <div>HRE 36/30 A</div>
+                    </div>
+                    <div class="brand-card" onclick="selectModel('HRE 36/48 A')">
+                        <div class="brand-icon">🌡️</div>
+                        <div>HRE 36/48 A</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="quick-questions" id="quickQuestions" style="display: none;">
+                <h3>Veelgestelde vragen:</h3>
+                <div class="question-pills" id="questionPills">
+                    <!-- Questions will be loaded here -->
+                </div>
+            </div>
+
+            <div class="chat-section" id="chatSection" style="display: none;">
+                <h3>💬 Stel je vraag over de Intergas <span id="selectedModel"></span>:</h3>
+                <div class="chat-messages" id="chatMessages">
+                    <div class="message assistant">
+                        <div class="message-label">Assistent</div>
+                        <div class="message-bubble">
+                            Hallo! Ik ben je digitale assistent voor de Intergas <span id="modelName"></span>. 
+                            Stel gerust je vraag of kies een van de veelgestelde vragen hierboven.
+                        </div>
+                    </div>
+                </div>
+                <div class="input-section">
+                    <input type="text" id="questionInput" placeholder="Type je vraag hier..." onkeypress="handleKeyPress(event)">
+                    <button onclick="askQuestion()" id="askButton">Verstuur</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedModel = null;
+        const API_URL = 'http://localhost:5000/api'; // Change this to your API URL
+
+        const commonQuestions = {
+            'HRE 24/18 A': [
+                'Hoe reset ik een storingscode?',
+                'Wat is de ideale waterdruk voor de CV-installatie?',
+                'Hoe stel ik de tapcomfortfunctie in (Aan/Eco/Uit)?',
+                'Wat betekent storingscode 4 (geen vlamsignaal)?',
+                'Hoe vul ik de CV-installatie bij?',
+                'Wat is de CW-klasse van dit toestel?'
+            ],
+            'HRE 28/24 A': [
+                'Hoe reset ik een storingscode?',
+                'Wat is de ideale waterdruk voor de CV-installatie?',
+                'Hoe stel ik de tapcomfortfunctie in (Aan/Eco/Uit)?',
+                'Wat betekent storingscode 4 (geen vlamsignaal)?',
+                'Hoe vul ik de CV-installatie bij?',
+                'Wat is de CW-klasse van dit toestel?'
+            ],
+            'HRE 36/30 A': [
+                'Hoe reset ik een storingscode?',
+                'Wat is de ideale waterdruk voor de CV-installatie?',
+                'Hoe stel ik de tapcomfortfunctie in (Aan/Eco/Uit)?',
+                'Wat betekent storingscode 4 (geen vlamsignaal)?',
+                'Hoe vul ik de CV-installatie bij?',
+                'Wat is de CW-klasse van dit toestel?'
+            ],
+            'HRE 36/48 A': [
+                'Hoe reset ik een storingscode?',
+                'Wat is de ideale waterdruk voor de CV-installatie?',
+                'Hoe stel ik de tapcomfortfunctie in (Aan/Eco/Uit)?',
+                'Wat betekent storingscode 4 (geen vlamsignaal)?',
+                'Hoe vul ik de CV-installatie bij?',
+                'Wat is de CW-klasse van dit toestel?'
+            ]
+        };
+
+        function selectModel(model) {
+            selectedModel = model;
+            
+            // Update UI
+            document.querySelectorAll('.brand-card').forEach(card => {
+                card.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+            
+            // Show quick questions
+            document.getElementById('quickQuestions').style.display = 'block';
+            document.getElementById('chatSection').style.display = 'block';
+            document.getElementById('selectedModel').textContent = model;
+            document.getElementById('modelName').textContent = model;
+            
+            // Load common questions
+            loadCommonQuestions(model);
+        }
+
+        function loadCommonQuestions(model) {
+            const pillsContainer = document.getElementById('questionPills');
+            pillsContainer.innerHTML = '';
+            
+            const questions = commonQuestions[model] || [];
+            questions.forEach(question => {
+                const pill = document.createElement('div');
+                pill.className = 'question-pill';
+                pill.textContent = question;
+                pill.onclick = () => quickAsk(question);
+                pillsContainer.appendChild(pill);
+            });
+        }
+
+        function quickAsk(question) {
+            document.getElementById('questionInput').value = question;
+            askQuestion();
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                askQuestion();
+            }
+        }
+
+        async function askQuestion() {
+            const input = document.getElementById('questionInput');
+            const question = input.value.trim();
+            
+            if (!question || !selectedModel) return;
+            
+            const chatMessages = document.getElementById('chatMessages');
+            const askButton = document.getElementById('askButton');
+            
+            // Add user message
+            const userMessage = document.createElement('div');
+            userMessage.className = 'message user';
+            userMessage.innerHTML = `
+                <div class="message-label">Jij</div>
+                <div class="message-bubble">${escapeHtml(question)}</div>
+            `;
+            chatMessages.appendChild(userMessage);
+            
+            // Clear input and disable button
+            input.value = '';
+            askButton.disabled = true;
+            askButton.innerHTML = '<span class="loading"></span>';
+            
+            try {
+                // First try common questions with local responses
+                const localResponse = getLocalResponse(selectedModel, question);
+                
+                if (localResponse) {
+                    // Use local response for common questions
+                    displayAssistantMessage(localResponse.answer, localResponse.source);
+                } else {
+                    // Call API for complex questions
+                    const response = await fetch(`${API_URL}/chat`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            question: question,
+                            model: selectedModel,
+                            conversation_history: getConversationHistory()
+                        })
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error('API request failed');
+                    }
+                    
+                    const data = await response.json();
+                    displayAssistantMessage(data.answer, data.source);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                // Fallback to local simulation if API fails
+                const fallbackResponse = simulateResponse(selectedModel, question);
+                displayAssistantMessage(
+                    fallbackResponse.answer,
+                    fallbackResponse.source + ' (Offline modus)'
+                );
+            }
+            
+            // Scroll to bottom
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            
+            // Re-enable button
+            askButton.disabled = false;
+            askButton.innerHTML = 'Verstuur';
+        }
+        
+        function displayAssistantMessage(answer, source) {
+            const chatMessages = document.getElementById('chatMessages');
+            const assistantMessage = document.createElement('div');
+            assistantMessage.className = 'message assistant';
+            
+            // Format answer with proper line breaks
+            const formattedAnswer = answer.replace(/\n/g, '<br>');
+            
+            assistantMessage.innerHTML = `
+                <div class="message-label">Assistent</div>
+                <div class="message-bubble">
+                    ${formattedAnswer}
+                    <div class="source-tag">📄 Bron: ${escapeHtml(source)}</div>
+                </div>
+            `;
+            chatMessages.appendChild(assistantMessage);
+        }
+        
+        function getConversationHistory() {
+            const messages = document.querySelectorAll('.message');
+            const history = [];
+            
+            // Get last 10 messages for context
+            const recentMessages = Array.from(messages).slice(-10);
+            
+            recentMessages.forEach(msg => {
+                const isUser = msg.classList.contains('user');
+                const bubble = msg.querySelector('.message-bubble');
+                if (bubble) {
+                    const text = bubble.textContent.replace(/📄 Bron:.*/, '').trim();
+                    history.push({
+                        role: isUser ? 'user' : 'assistant',
+                        content: text
+                    });
+                }
+            });
+            
+            return history;
+        }
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        function getLocalResponse(model, question) {
+            // Check if it's a common question that we can answer locally
+            const q = question.toLowerCase();
+            
+            // Use the existing responses object for common questions
+            if (q.includes('storing') && q.includes('4')) {
+                return responses.storingscode4;
+            } else if (q.includes('storing') && q.includes('reset')) {
+                return responses.storing;
+            } else if (q.includes('waterdruk') || q.includes('druk')) {
+                return responses.waterdruk;
+            } else if (q.includes('tapcomfort')) {
+                return responses.tapcomfort;
+            } else if (q.includes('vul') || q.includes('bijvul')) {
+                return responses.vullen;
+            } else if (q.includes('cw') || q.includes('klasse')) {
+                const cwResponse = responses.cw_klasse();
+                return cwResponse;
+            }
+            
+            // Return null for complex questions that need API
+            return null;
+        }
+
+        function simulateResponse(model, question) {
+            // This is where you'd make the actual API call
+            // For demo purposes, we're returning mock responses
+            
+            const responses = {
+                'storing': {
+                    answer: 'Om een storingscode te resetten:\n\n1. Druk op de resettoets (R) op het bedieningspaneel\n2. Het toestel zal de ontsteekprocedure starten\n3. Als de storing terugkeert, controleer de oorzaak\n\nVeelvoorkomende storingscodes:\n• Storing 1: Temperatuur te hoog (ontlucht installatie)\n• Storing 4: Geen vlamsignaal (controleer gastoevoer)\n• Storing 10-14: Sensorfout S1\n• Storing 20-24: Sensorfout S2\n\nLaatste storing bekijken: Toestel uit + Service-toets indrukken',
+                    source: `Intergas ${model} Handleiding - Pagina 55-56`
+                },
+                'waterdruk': {
+                    answer: 'De ideale waterdruk voor de CV-installatie:\n\n• **Koude installatie:** 1.0 - 2.0 bar\n• **Warme installatie:** maximaal 2.5 bar\n• **Minimale druk:** 0.5 bar (knippert op display)\n\nBijvullen van de installatie:\n1. Sluit vulslang aan op vul-/aftapkraan\n2. Vul tot 1-2 bar (lees af op temperatuurdisplay)\n3. Ontlucht met handontluchter (A)\n4. Controleer druk en vul indien nodig bij\n\nDruk wordt getoond op display in uit-stand',
+                    source: `Intergas ${model} Handleiding - Pagina 41-42`
+                },
+                'tapcomfort': {
+                    answer: 'De tapcomfortfunctie heeft 3 standen:\n\n• **Aan** (⚪ LED): Warmtewisselaar blijft continu warm\n• **Eco** (🕐 LED): Zelflerend systeem, past zich aan gebruik aan\n• **Uit** (LED\'s uit): Geen voorverwarming\n\nInstellen via bedieningspaneel:\n1. Druk op de tapcomfort-toets (🚿)\n2. Kies gewenste stand\n\nBij Aan en Eco voldoet toestel aan Gaskeur CW-eisen\nEco-stand leert gebruikspatroon en bespaart \'s nachts energie',
+                    source: `Intergas ${model} Handleiding - Pagina 7, 45`
+                },
+                'storingscode4': {
+                    answer: 'Storingscode 4: Geen vlamsignaal\n\nMogelijke oorzaken:\n• Gaskraan dicht\n• Gasvoordruk te laag (< 20 mbar)\n• Condensafvoer verstopt\n• Geen of verkeerde ontsteekafstand\n• Gasblok krijgt geen spanning\n\nOplossing:\n1. Controleer of gaskraan open staat\n2. Controleer gasvoordruk\n3. Controleer condensafvoer\n4. Controleer ontsteekunit en ontsteekkabel\n5. Controleer aarding\n\nNa oplossen: Reset met R-toets',
+                    source: `Intergas ${model} Handleiding - Pagina 55`
+                },
+                'vullen': {
+                    answer: 'CV-installatie vullen en ontluchten:\n\n1. Steek steker in wandcontactdoos\n2. Toestel toont CV-druk op display\n3. Sluit vulslang aan op vul-/aftapkraan\n4. Vul tot 1-2 bar (koude installatie)\n5. Ontlucht toestel met handontluchter (A)\n6. Ontlucht radiatoren\n7. Vul bij als druk te laag\n8. Controleer koppelingen op lekkage\n\n⚠️ Let op: Vul sifon met water tegen rookgassen\n⚠️ Gebruik alleen geschikte toevoegmiddelen (KIWA-ATA)',
+                    source: `Intergas ${model} Handleiding - Pagina 41-42`
+                },
+                'cw_klasse': {
+                    answer: function() {
+                        const cwInfo = {
+                            'HRE 24/18 A': 'CW-klasse 3: Levert min. 6 L/min van 60°C\nKan bad van 100L in 12 min vullen (40°C)',
+                            'HRE 28/24 A': 'CW-klasse 4: Levert min. 7,5 L/min van 60°C\nKan bad van 120L in 11 min vullen (40°C)',
+                            'HRE 36/30 A': 'CW-klasse 5: Levert min. 9 L/min van 60°C\nKan bad van 150L in 10 min vullen (40°C)',
+                            'HRE 36/48 A': 'CW-klasse 5: Levert min. 9 L/min van 60°C\nKan bad van 150L in 10 min vullen (40°C)'
+                        };
+                        return {
+                            answer: `${model} specificaties:\n\n${cwInfo[model]}\n\nDit betekent dat het toestel geschikt is voor:\n• Gelijktijdig gebruik van meerdere tappunten\n• Snel vullen van bad\n• Comfortabel douchen\n\nBij Aan/Eco tapcomfort voldoet aan Gaskeur CW-eisen`,
+                            source: `Intergas ${model} Handleiding - Pagina 5`
+                        };
+                    }
+                },
+                default: {
+                    answer: `Ik heb je vraag over "${question}" ontvangen voor de Intergas ${model}.\n\nVoor dit model adviseer ik:\n1. Raadpleeg de handleiding voor specifieke informatie\n2. Controleer parameters via servicemenu (Service + OK)\n3. Bij storing: noteer storingscode voor diagnose\n\nVeelgestelde onderwerpen:\n• Storingscodes (pagina 55-56)\n• Vullen/ontluchten (pagina 41-42)\n• Tapcomfort instellen (pagina 7, 45)\n• Parameters wijzigen (pagina 45-54)`,
+                    source: `Intergas ${model} Technische Documentatie`
+                }
+            };
+
+            // Enhanced keyword matching
+            const q = question.toLowerCase();
+            
+            if (q.includes('storing') && q.includes('4')) {
+                return responses.storingscode4;
+            } else if (q.includes('storing') || q.includes('reset') || q.includes('code')) {
+                return responses.storing;
+            } else if (q.includes('waterdruk') || q.includes('druk') || q.includes('bar')) {
+                return responses.waterdruk;
+            } else if (q.includes('tapcomfort') || q.includes('warm water') || q.includes('eco')) {
+                return responses.tapcomfort;
+            } else if (q.includes('vul') || q.includes('bijvul') || q.includes('ontlucht')) {
+                return responses.vullen;
+            } else if (q.includes('cw') || q.includes('klasse') || q.includes('liter')) {
+                const cwResponse = responses.cw_klasse();
+                return cwResponse;
+            } else {
+                return responses.default;
+            }
+        }
+    </script>
+</body>
+</html>
